@@ -1,6 +1,8 @@
 <?php
 
-namespace LaravelCreative\Draftable;
+declare(strict_types=1);
+
+namespace CnB\Draftable;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -11,9 +13,7 @@ class DraftableServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
          $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-
     }
 
     /**
@@ -21,6 +21,5 @@ class DraftableServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
     }
 }

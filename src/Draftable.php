@@ -1,135 +1,166 @@
 <?php
 
-namespace LaravelCreative\Draftable;
+declare(strict_types=1);
 
+namespace CnB\Draftable;
 
-use App\User;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Collection;
 
+/**
+ * @property Carbon $published_at
+ * @property array $draftable_data
+ * @property array $data
+ * @property class-string<Model> $draftable_model
+ * @property int $draftable_id
+ */
 class Draftable extends Model
 {
     protected $table = 'draftables';
 
-    protected $dates = ['created_at', 'updated_at', 'published_at'];
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'published_at',
+    ];
 
-    protected $casts = ['draftable_data' => 'array', 'data' => 'array'];
+    protected $casts = [
+        'draftable_data' => 'array',
+        'data' => 'array',
+    ];
 
-
-    protected $fillable = ['draftable_id', 'draftable_data', 'draftable_model', 'published_at', 'user_id', 'data'];
-
+    protected $fillable = [
+        'draftable_id',
+        'draftable_data',
+        'draftable_model',
+        'published_at',
+        'owner_id',
+        'data',
+    ];
 
     /**
      * Unpublished Drafts Scope
-     * @param $query
-     * @return mixed
+     *
+     * @param Builder $query
+     * @return Builder
      */
-    public function ScopeUnPublished($query)
+    public function scopeUnPublished(Builder $query): Builder
     {
         return $query->where('published_at', null);
     }
 
     /**
      * Published Drafts Scope
-     * @param $query
-     * @return mixed
+     *
+     * @param Builder $query
+     * @return Builder
      */
-    public function ScopePublished($query)
+    public function scopePublished(Builder $query): Builder
     {
         return $query->where('published_at', '!=', null);
     }
 
-
     /**
      * Publish Method to publish the draft
-     * @return $this
-     * @throws \Exception
+     *
+     * @return static
+     * @throws Exception
      */
-    public function publish()
+    public function publish(): static
     {
         try {
             $new_class = $this->draftable_model::create($this->draftable_data);
             $this->published_at = Carbon::now();
             $this->draftable_id = $new_class->id;
             $this->save();
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
+
         return $this;
     }
 
-
     /**
      * Restore Method for old draft
-     * @return $this
-     * @throws \Exception
+     *
+     * @return static
+     * @throws Exception
      */
-    public function restore()
+    public function restore(): static
     {
         try {
             $new_class = $this->draftable_model::where('id', $this->draftable_id)->first();
-            if (empty($new_class)) throw new \Exception('Cant Find Resource for ' . $this->draftable_model . ' with id ' . $this->draftable_id);
+            if (empty($new_class)) {
+                throw new Exception('Cant Find Resource for ' . $this->draftable_model . ' with id ' . $this->draftable_id);
+            }
+
             $new_class->update($this->draftable_data);
             $this->published_at = Carbon::now();
             $this->draftable_id = $new_class->id;
             $this->save();
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
+
         return $this;
     }
 
-
     /**
      * Build the model for current draft
-     * @return mixed
-     * @throws \Exception
+     *
+     * @return static
+     * @throws Exception
      */
-    public function model()
+    public function model(): static
     {
         try {
             $new_class = new $this->draftable_model();
             $new_class->forceFill($this->draftable_data);
             $new_class->published_at = $this->published_at;
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+
+            return $new_class;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-        return $new_class;
     }
 
-
     /**
-     * user relation
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Default draft owner is authenticated user.
+     *
+     * @return BelongsTo
      */
-    public function user()
+    public function draftOwner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
-
     /**
-     * Set Additional data for the draft
-     * @param $key
-     * @param $value
+     * Set Additional data for the draft.
+     *
+     * @param string $key
+     * @param mixed $value
      * @return $this
      */
-    public function setData($key, $value)
+    public function setData(string $key, mixed $value): static
     {
         $data = $this->data;
         $data[$key] = $value;
         $this->data = $data;
         $this->save();
+
         return $this;
     }
-
 
     /**
      * get data of draft
      */
-    public function getData($key)
+    public function getData(string $key): mixed
     {
-        return isset($this->data[$key]) ? $this->data[$key] : null;
+        return $this->data[$key] ?? null;
     }
 }

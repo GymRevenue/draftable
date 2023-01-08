@@ -1,8 +1,8 @@
 {
-    "name": "laravel-creative/draftable",
+    "name": "cnb/draftable",
     "description": "Laravel Drafts tool for models",
     "keywords": [
-        "laravel-creative",
+        "cnb",
         "draftable",
         "laravel packages",
         "laravel wordpress",
@@ -19,23 +19,28 @@
             "name": "Mustafa Khaled",
             "email": "mustafakhaled.dev@gmail.com",
             "role": "Developer"
+        },
+        {
+            "name": "Chrys Ugwu",
+            "email": "chrys@capeandbay.com",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": "^7.1"
+        "php": "^8.1"
     },
     "require-dev": {
-        "orchestra/testbench": "3.8.*",
-        "phpunit/phpunit": "^7.0"
+        "orchestra/testbench": "^7.18",
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
-            "LaravelCreative\\Draftable\\": "src"
+            "CnB\\Draftable\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "LaravelCreative\\Draftable\\Tests\\": "tests"
+            "CnB\\Draftable\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -49,7 +54,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "LaravelCreative\\Draftable\\DraftableServiceProvider"
+                "CnB\\Draftable\\DraftableServiceProvider"
             ]
         }
     }
