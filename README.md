@@ -56,7 +56,7 @@ $article::setOwner($user);
 To get all drafts for specific owner
 
 ```php
- $draft_articles=Article::setOwner($user)->getAllDrafts();
+ $draft_articles = Article::setOwner($user)->getAllDrafts();
 ```
 
 #### Save data with the draft
