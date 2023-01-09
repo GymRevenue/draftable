@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CnB\Draftable;
+namespace CapeAndBay\Draftable;
 
 use Illuminate\Support\ServiceProvider;
 

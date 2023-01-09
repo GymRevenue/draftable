@@ -1,17 +1,15 @@
 {
-    "name": "cnb/draftable",
+    "name": "cape-and-bay/draftable",
     "description": "Laravel Drafts tool for models",
     "keywords": [
-        "cnb",
+        "CapeAndBay",
         "draftable",
         "laravel packages",
-        "laravel wordpress",
-        "wordpress",
         "drafts",
         "archive",
         "restore models"
     ],
-    "homepage": "https://github.com/laravel-creative/draftable",
+    "homepage": "https://github.com/GymRevenue/draftable",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -35,12 +33,12 @@
     },
     "autoload": {
         "psr-4": {
-            "CnB\\Draftable\\": "src"
+            "CapeAndBay\\Draftable\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "CnB\\Draftable\\Tests\\": "tests"
+            "CapeAndBay\\Draftable\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -54,7 +52,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "CnB\\Draftable\\DraftableServiceProvider"
+                "CapeAndBay\\Draftable\\DraftableServiceProvider"
             ]
         }
     }

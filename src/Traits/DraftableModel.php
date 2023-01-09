@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CnB\Draftable\Traits;
+namespace CapeAndBay\Draftable\Traits;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Collection;
-use CnB\Draftable\Draftable;
+use CapeAndBay\Draftable\Draftable;
 use Exception;
 
 /**

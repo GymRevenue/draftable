@@ -10,7 +10,7 @@ Bring the power of Wordpress drafts posts to your Laravel application , with sim
 You can install the package via composer:
 
 ```bash
-composer require cnb/draftable
+composer require CapeAndBay/draftable
 ```
 
 after installing the package go a head and run migrate.
