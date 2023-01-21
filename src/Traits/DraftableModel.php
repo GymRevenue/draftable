@@ -189,12 +189,13 @@ trait DraftableModel
     /**
      * Set user for draft ( the creator of draft )
      *
-     * @param User $model
+     * @param Model|string $owner
+     *
      * @return DraftableModel
      */
-    public static function setOwner(Model $model): static
+    public static function setOwner(Model|string $owner): static
     {
-        static::$owner_id = self::getIdentifierFromModel($model);
+        static::$owner_id = is_string($owner) ? $owner : self::getIdentifierFromModel($owner);
 
         return new static();
     }
