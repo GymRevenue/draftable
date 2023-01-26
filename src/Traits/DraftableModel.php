@@ -19,7 +19,7 @@ use Exception;
  */
 trait DraftableModel
 {
-    private static ?string $owner_id = null;
+    private static ?Model $owner = null;
 
     /**
      * get All Drafts Collection for model
@@ -71,12 +71,14 @@ trait DraftableModel
     public function saveAsDraft(?Model $owner = null): static
     {
         try {
+            [$owner_model, $owner_id] = self::parseOwner($owner);
             $this->draft = Draftable::create([
                 'draftable_id' => $this->id,
                 'draftable_data' => $this->toArray(),
                 'draftable_model' => static::class,
                 'published_at' => null,
-                'owner_id' => static::getIdentifierFromModel($owner, static::$owner_id),
+                'owner_model' => $owner_model,
+                'owner_id' => $owner_id,
                 'data' => []
             ]);
         } catch (Exception $e) {
@@ -95,16 +97,16 @@ trait DraftableModel
     public function saveWithDraft(?Model $owner = null): static
     {
         $this->save();
-        $drafted_array = $this->toArray();
-        unset($drafted_array['id']);
 
         try {
+            [$owner_model, $owner_id] = self::parseOwner($owner);
             $this->draft = Draftable::create([
                 'draftable_id' => $this->id,
-                'draftable_data' => $drafted_array,
+                'draftable_data' => $this->toArray(),
                 'draftable_model' => static::class,
                 'published_at' => Carbon::now(),
-                'owner_id' => static::getIdentifierFromModel($owner, static::$owner_id),
+                'owner_model' => $owner_model,
+                'owner_id' => $owner_id,
                 'data' => []
             ]);
         } catch (Exception $e) {
@@ -145,9 +147,7 @@ trait DraftableModel
     private static function draftsQuery(): Builder
     {
         $condition = ['draftable_model' => static::class];
-        if (static::$owner_id !== null) {
-            $condition['owner_id'] = static::$owner_id;
-        }
+        [$condition['owner_model'], $condition['owner_id']] = self::parseOwner();
 
         return Draftable::where($condition);
     }
@@ -189,23 +189,27 @@ trait DraftableModel
     /**
      * Set user for draft ( the creator of draft )
      *
-     * @param Model|string $owner
+     * @param Model $owner
      *
      * @return DraftableModel
      */
-    public static function setOwner(Model|string $owner): static
+    public static function setOwner(Model $owner): static
     {
-        static::$owner_id = is_string($owner) ? $owner : self::getIdentifierFromModel($owner);
+        static::$owner = $owner;
 
         return new static();
     }
 
-    private static function getIdentifierFromModel(?Model $model = null, ?string $default = null): ?string
+    /**
+     * @return null[]|string[]
+     */
+    private static function parseOwner(?Model $model = null): array
     {
+        $model ??= self::$owner;
         if ($model === null) {
-            return $default;
+            return [null, null];
         }
 
-        return $model->{$model->getKeyName()};
+        return [$model::class, $model->{$model->getKeyName()}];
     }
 }

@@ -13,11 +13,12 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Collection;
 
 /**
- * @property Carbon $published_at
- * @property array $draftable_data
- * @property array $data
+ * @property Carbon              $published_at
+ * @property array               $draftable_data
+ * @property array               $data
  * @property class-string<Model> $draftable_model
- * @property int $draftable_id
+ * @property int                 $draftable_id
+ * @property string              $owner_model
  */
 class Draftable extends Model
 {
@@ -130,13 +131,13 @@ class Draftable extends Model
     }
 
     /**
-     * Default draft owner is authenticated user.
+     * Default draft owner.
      *
      * @return BelongsTo
      */
     public function draftOwner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo($this->owner_model, 'owner_id');
     }
 
     /**
