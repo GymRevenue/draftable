@@ -64,15 +64,19 @@ trait DraftableModel
 
     /**
      * Save model as draft
-     * @param Model|null $owner
+     *
+     * @param Model|null  $owner
+     * @param string|null $id
+     *
      * @return $this
      * @throws Exception
      */
-    public function saveAsDraft(?Model $owner = null): static
+    public function saveAsDraft(?Model $owner = null, ?string $id = null): static
     {
         try {
             [$owner_model, $owner_id] = self::parseOwner($owner);
             $this->draft = Draftable::create([
+                'id' => $id,
                 'draftable_id' => $this->id,
                 'draftable_data' => $this->toArray(),
                 'draftable_model' => static::class,
@@ -90,17 +94,21 @@ trait DraftableModel
 
     /**
      * Save model with draft
-     * @param Model|null $owner
+     *
+     * @param Model|null  $owner
+     * @param string|null $id
+     *
      * @return $this
      * @throws Exception
      */
-    public function saveWithDraft(?Model $owner = null): static
+    public function saveWithDraft(?Model $owner = null, ?string $id = null): static
     {
         $this->save();
 
         try {
             [$owner_model, $owner_id] = self::parseOwner($owner);
             $this->draft = Draftable::create([
+                'id' => $id,
                 'draftable_id' => $this->id,
                 'draftable_data' => $this->toArray(),
                 'draftable_model' => static::class,

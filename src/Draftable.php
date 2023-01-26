@@ -39,6 +39,7 @@ class Draftable extends Model
     ];
 
     protected $fillable = [
+        'id',
         'draftable_id',
         'draftable_data',
         'draftable_model',
