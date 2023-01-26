@@ -14,7 +14,7 @@ class CreateDraftablesTable extends Migration
     public function up()
     {
         Schema::create('draftables', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->uuid('id')->primary()->unique();
             $table->longText('draftable_data');
             $table->string('draftable_model');
             $table->string('draftable_id')->nullable();

@@ -7,6 +7,7 @@ namespace CapeAndBay\Draftable;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User;
@@ -22,6 +23,8 @@ use Illuminate\Support\Collection;
  */
 class Draftable extends Model
 {
+    use HasUuids;
+
     protected $table = 'draftables';
 
     protected $dates = [
