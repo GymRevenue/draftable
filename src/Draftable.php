@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Collection;
 
 /**
+ * @property string              $id
  * @property Carbon              $published_at
  * @property array               $draftable_data
  * @property array               $data
@@ -122,7 +123,7 @@ class Draftable extends Model
      * @return static
      * @throws Exception
      */
-    public function model(): static
+    public function model(): Model
     {
         try {
             $new_class = new $this->draftable_model();
