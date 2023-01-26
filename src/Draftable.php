@@ -40,6 +40,7 @@ class Draftable extends Model
         'draftable_data',
         'draftable_model',
         'published_at',
+        'owner_model',
         'owner_id',
         'data',
     ];
