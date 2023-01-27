@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Collection;
 use CapeAndBay\Draftable\Draftable;
 use Exception;
@@ -103,6 +102,10 @@ trait DraftableModel
      */
     public function saveWithDraft(?Model $owner = null, ?string $id = null): static
     {
+        if (is_a($this, 'Spatie\EventSourcing\Projections\Projection')) {
+            $this->writable();
+        }
+
         $this->save();
 
         try {
