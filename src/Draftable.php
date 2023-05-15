@@ -123,12 +123,20 @@ class Draftable extends Model
      * @return static
      * @throws Exception
      */
-    public function model(): Model
+    public function model(bool $hydrate = true): Model
     {
         try {
             $new_class = new $this->draftable_model();
             $new_class->forceFill($this->draftable_data);
             $new_class->published_at = $this->published_at;
+
+            if ($hydrate) {
+                $new_class->original_id = $new_class->id;
+                $new_class->id          = $this->id;
+                $new_class->is_draft    = true;
+                $new_class->created_at  = $this->created_at;
+                $new_class->updated_at  = $this->updated_at;
+            }
 
             return $new_class;
         } catch (Exception $e) {

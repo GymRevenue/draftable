@@ -25,9 +25,9 @@ trait DraftableModel
      * @param bool $unfillable
      * @return Collection
      */
-    public static function getAllDrafts(bool $unfillable = false): Collection
+    public static function getAllDrafts(bool $unfillable = false, bool $hydrate = true): Collection
     {
-        return static::getDraftsCollection(static::draftsQuery()->get(), $unfillable);
+        return static::getDraftsCollection(static::draftsQuery()->get(), $unfillable, $hydrate);
     }
 
     /**
@@ -35,9 +35,9 @@ trait DraftableModel
      * @param bool $unfillable
      * @return Collection
      */
-    public static function getPublishedDraft(bool $unfillable = false): Collection
+    public static function getPublishedDraft(bool $unfillable = false, bool $hydrate = true): Collection
     {
-        return static::getDraftsCollection(static::draftsQuery()->published()->get(), $unfillable);
+        return static::getDraftsCollection(static::draftsQuery()->published()->get(), $unfillable, $hydrate);
     }
 
     /**
@@ -45,20 +45,22 @@ trait DraftableModel
      * @param bool $unfillable
      * @return Collection
      */
-    public static function getUnpublishedDraft(bool $unfillable = false): Collection
+    public static function getUnpublishedDraft(bool $unfillable = false, bool $hydrate = true): Collection
     {
-        return static::getDraftsCollection(static::draftsQuery()->unpublished()->get(), $unfillable);
+        return static::getDraftsCollection(static::draftsQuery()->unpublished()->get(), $unfillable, $hydrate);
     }
 
     /**
      * Get Drafts Collection
-     * @param Collection $draft_entries
-     * @param bool $unfillable
+     *
+     * @param Collection $entries
+     * @param bool       $unfillable
+     *
      * @return Collection
      */
-    private static function getDraftsCollection(Collection $draft_entries, bool $unfillable): Collection
+    private static function getDraftsCollection(Collection $entries, bool $unfillable, bool $hydrate = true): Collection
     {
-        return static::buildCollection($draft_entries, $unfillable);
+        return static::buildCollection($entries, $unfillable, $hydrate);
     }
 
     /**
@@ -82,7 +84,7 @@ trait DraftableModel
                 'published_at' => null,
                 'owner_model' => $owner_model,
                 'owner_id' => $owner_id,
-                'data' => []
+                'data' => [],
             ]);
         } catch (Exception $e) {
             throw new  Exception($e->getMessage());
@@ -118,7 +120,7 @@ trait DraftableModel
                 'published_at' => Carbon::now(),
                 'owner_model' => $owner_model,
                 'owner_id' => $owner_id,
-                'data' => []
+                'data' => [],
             ]);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
@@ -129,23 +131,24 @@ trait DraftableModel
 
     /**
      * Build Collection for model
-     * @param Collection<Draftable> $draftable_entries
-     * @param bool $unfillable
+     *
+     * @param Collection<Draftable> $entries
+     * @param bool                  $unfillable
+     *
      * @return Collection
      */
-    private static function buildCollection(Collection $draftable_entries, bool $unfillable = false): Collection
+    private static function buildCollection(Collection $entries, bool $unfillable, bool $hydrate): Collection
     {
         if ($unfillable) {
-            return $draftable_entries;
+            return $entries;
         }
 
         $collection = new Collection();
-        foreach ($draftable_entries as $entery) {
-            $new_class = new static();
-            $new_class->forceFill($entery->draftable_data);
-            $new_class->published_at = $entery->published_at;
-            $new_class->draft = $entery;
-            $collection->push($new_class);
+        /** @var Draftable $entery */
+        foreach ($entries as $entery) {
+            $new_model = $entery->model($hydrate);
+            $new_model->draft = $entery;
+            $collection->push($new_model);
         }
 
         return $collection;
